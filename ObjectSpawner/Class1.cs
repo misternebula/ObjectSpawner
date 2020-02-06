@@ -15,6 +15,12 @@ namespace ObjectSpawner
         public GameObject campfire;
         public GameObject tektite;
         public GameObject reibeck;
+        public GameObject mica;
+        public GameObject NOMstaff;
+
+        public bool editMode = false;
+
+        public List<GameObject> goList = new List<GameObject>();
 
         private void Start()
         {
@@ -25,8 +31,14 @@ namespace ObjectSpawner
         {
             solanum = Instantiate(GameObject.Find("Character_NOM_Solanum"));
             solanum.SetActive(false);
-            StreamingManager.LoadStreamingAssets("quantummoon/meshes/characters");
 
+            mica = Instantiate(GameObject.Find("Villager_HEA_Mica"));
+            mica.SetActive(false);
+
+            NOMstaff = Instantiate(GameObject.Find("Prefab_NOM_Staff"));
+            NOMstaff.SetActive(false);
+
+            /*
             esker = Instantiate(GameObject.Find("Villager_HEA_Esker"));
             esker.SetActive(false);
             StreamingManager.LoadStreamingAssets("timberhearth/meshes/characters");
@@ -40,15 +52,53 @@ namespace ObjectSpawner
             reibeck = Instantiate(GameObject.Find("Traveller_HEA_Riebeck"));
             reibeck.SetActive(false);
             StreamingManager.LoadStreamingAssets("brittlehollow/meshes/characters");
+            */
         }
 
         void Update()
         {
+            if (Input.GetKeyDown(KeyCode.KeypadMinus))
+            {
+                NotificationData data = new NotificationData(NotificationTarget.Player, "DELETING " + goList[goList.Count-1].name + " FROM SCENE", 3f, true);
+                NotificationManager.SharedInstance.PostNotification(data, false);
+                Destroy(goList[goList.Count-1]);
+                goList.Remove(goList[goList.Count-1]);
+            }
+
+            if (Input.GetKeyDown(KeyCode.KeypadDivide))
+            {
+                NotificationData data = new NotificationData(NotificationTarget.Player, "~||~ EDIT MODE ~||~", 3f, true);
+                if (editMode == false)
+                {
+                    editMode = true;
+                    NotificationManager.SharedInstance.PostNotification(data, true);
+                }
+                else
+                {
+                    editMode = false;
+                    NotificationManager.SharedInstance.UnpinNotification(data);
+                }
+                
+            }
+
             if (Input.GetKeyDown(KeyCode.Keypad0))
             {
                 PlaceObjectRaycast(Instantiate(solanum));
+                StreamingManager.LoadStreamingAssets("quantummoon/meshes/characters");
             }
 
+            if (Input.GetKeyDown(KeyCode.Keypad1))
+            {
+                PlaceObjectRaycast(Instantiate(mica));
+            }
+
+            if (Input.GetKeyDown(KeyCode.Keypad2))
+            {
+                PlaceObjectRaycast(Instantiate(NOMstaff));
+                StreamingManager.LoadStreamingAssets("brittlehollow/meshes/props");
+            }
+
+            /*
             if (Input.GetKeyDown(KeyCode.Keypad1))
             {
                 PlaceObjectRaycast(Instantiate(esker));
@@ -68,6 +118,7 @@ namespace ObjectSpawner
             {
                 PlaceObjectRaycast(Instantiate(reibeck));
             }
+            */
         }
 
         void PlaceObject(Vector3 normal, Vector3 point, GameObject gameObject, OWRigidbody targetRigidbody)
@@ -82,8 +133,10 @@ namespace ObjectSpawner
 
         void PlaceObjectRaycast(GameObject gameObject)
         {
+
             if (IsPlaceable(out Vector3 placeNormal, out Vector3 placePoint, out OWRigidbody targetRigidbody))
             {
+                goList.Add(gameObject);
                 PlaceObject(placeNormal, placePoint, gameObject, targetRigidbody);
             }
         }
