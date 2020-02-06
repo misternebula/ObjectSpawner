@@ -70,29 +70,39 @@ namespace ObjectSpawner
             }
         }
 
+        void PlaceObject(Vector3 normal, Vector3 point, GameObject gameObject, OWRigidbody targetRigidbody)
+        {
+            Transform parent = targetRigidbody.transform;
+            gameObject.SetActive(true);
+            gameObject.transform.SetParent(parent);
+            Quaternion lhs = Quaternion.FromToRotation(gameObject.transform.TransformDirection(Vector3.up), normal);
+            gameObject.transform.rotation = lhs * gameObject.transform.rotation;
+            gameObject.transform.position = point + gameObject.transform.TransformDirection(Vector3.zero);
+        }
+
         void PlaceObjectRaycast(GameObject gameObject)
         {
-            if (IsPlaceable(out RaycastHit hit, out OWRigidbody targetRigidbody))
+            if (IsPlaceable(out Vector3 placeNormal, out Vector3 placePoint, out OWRigidbody targetRigidbody))
             {
-                Transform parent = targetRigidbody.transform;
-                gameObject.SetActive(true);
-                gameObject.transform.SetParent(parent);
-                Quaternion lhs = Quaternion.FromToRotation(gameObject.transform.TransformDirection(Vector3.up), hit.normal);
-                gameObject.transform.rotation = lhs * gameObject.transform.rotation;
-                gameObject.transform.position = hit.point + gameObject.transform.TransformDirection(Vector3.zero);
+                PlaceObject(placeNormal, placePoint, gameObject, targetRigidbody);
             }
         }
 
-        bool IsPlaceable(out RaycastHit hit, out OWRigidbody targetRigidbody)
+        bool IsPlaceable(out Vector3 placeNormal, out Vector3 placePoint, out OWRigidbody targetRigidbody)
         {
-            hit = default(RaycastHit);
+            placeNormal = Vector3.zero;
+            placePoint = Vector3.zero;
             targetRigidbody = null;
 
             Vector3 forward = Locator.GetPlayerTransform().forward;
             Vector3 forward2 = Locator.GetPlayerCamera().transform.forward;
+
+            RaycastHit hit;
             
             if (Physics.Raycast(Locator.GetPlayerCamera().transform.position, forward2, out hit, 100f, OWLayerMask.physicalMask | OWLayerMask.interactMask))
             {
+                placeNormal = hit.normal;
+                placePoint = hit.point;
                 targetRigidbody = hit.collider.GetAttachedOWRigidbody(false);
                 return true;
             }
