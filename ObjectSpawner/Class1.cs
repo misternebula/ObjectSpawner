@@ -18,9 +18,13 @@ namespace ObjectSpawner
         public GameObject mica;
         public GameObject NOMstaff;
 
+        public GameObject edit;
+
         public bool editMode = false;
 
         public List<GameObject> goList = new List<GameObject>();
+
+        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 
         private void Start()
         {
@@ -67,61 +71,77 @@ namespace ObjectSpawner
 
             if (Input.GetKeyDown(KeyCode.KeypadDivide))
             {
-                NotificationData data = new NotificationData(NotificationTarget.Player, "~||~ EDIT MODE ~||~", 3f, true);
-                if (editMode == false)
+                NotificationData enterEdit = new NotificationData(NotificationTarget.Player, "ENTERING EDIT MODE", 3f, true);
+                NotificationData exitEdit = new NotificationData(NotificationTarget.Player, "EXITING EDIT MODE", 3f, true);
+                if (!editMode)
                 {
                     editMode = true;
-                    NotificationManager.SharedInstance.PostNotification(data, true);
+                    NotificationManager.SharedInstance.PostNotification(enterEdit, false);
                 }
                 else
                 {
                     editMode = false;
-                    NotificationManager.SharedInstance.UnpinNotification(data);
+                    NotificationManager.SharedInstance.PostNotification(exitEdit, false);
                 }
-                
             }
 
-            if (Input.GetKeyDown(KeyCode.Keypad0))
+            if (editMode)
             {
-                PlaceObjectRaycast(Instantiate(solanum));
-                StreamingManager.LoadStreamingAssets("quantummoon/meshes/characters");
-            }
+                if (Input.GetKeyDown(KeyCode.KeypadMultiply))
+                {
+                    Vector3 forward = Locator.GetPlayerTransform().forward;
+                    Vector3 forward2 = Locator.GetPlayerCamera().transform.forward;
+                    RaycastHit hit;
 
-            if (Input.GetKeyDown(KeyCode.Keypad1))
-            {
-                PlaceObjectRaycast(Instantiate(mica));
-            }
+                    if (Physics.Raycast(Locator.GetPlayerCamera().transform.position, forward2, out hit, 100f, OWLayerMask.physicalMask | OWLayerMask.interactMask))
+                    {
+                        edit = hit.collider.gameObject;
+                        UpdateEditHud();
+                        UpdateEditUI();
+                    }
+                }
 
-            if (Input.GetKeyDown(KeyCode.Keypad2))
-            {
-                PlaceObjectRaycast(Instantiate(NOMstaff));
-                StreamingManager.LoadStreamingAssets("brittlehollow/meshes/props");
+                if (Input.GetKeyDown(KeyCode.PageUp))
+                {
+                    edit = edit.transform.parent.gameObject;
+                    UpdateEditHud();
+                    UpdateEditUI();
+                }
             }
+            else
+            {
+                if (Input.GetKeyDown(KeyCode.Keypad0))
+                {
+                    PlaceObjectRaycast(Instantiate(solanum), true);
+                    StreamingManager.LoadStreamingAssets("quantummoon/meshes/characters");
+                }
 
-            /*
-            if (Input.GetKeyDown(KeyCode.Keypad1))
-            {
-                PlaceObjectRaycast(Instantiate(esker));
-            }
+                if (Input.GetKeyDown(KeyCode.Keypad1))
+                {
+                    PlaceObjectRaycast(Instantiate(mica), true);
+                }
 
-            if (Input.GetKeyDown(KeyCode.Keypad2))
-            {
-                PlaceObjectRaycast(Instantiate(campfire));
+                if (Input.GetKeyDown(KeyCode.Keypad2))
+                {
+                    PlaceObjectRaycast(Instantiate(NOMstaff), true);
+                    StreamingManager.LoadStreamingAssets("brittlehollow/meshes/props");
+                }
             }
-
-            if (Input.GetKeyDown(KeyCode.Keypad3))
-            {
-                PlaceObjectRaycast(Instantiate(tektite));
-            }
-
-            if (Input.GetKeyDown(KeyCode.Keypad4))
-            {
-                PlaceObjectRaycast(Instantiate(reibeck));
-            }
-            */
         }
 
-        void PlaceObject(Vector3 normal, Vector3 point, GameObject gameObject, OWRigidbody targetRigidbody)
+        void UpdateEditHud()
+        {
+            NotificationData selectedObject = new NotificationData(NotificationTarget.Player, "EDITING : " + edit.name, 3f, true);
+            NotificationManager.SharedInstance.PostNotification(selectedObject, false);
+        }
+
+        void UpdateEditUI()
+        {
+            sphere.transform.parent = edit.transform;
+            sphere.transform.localPosition = Vector3.zero;
+        }
+
+        void PlaceObject(Vector3 normal, Vector3 point, GameObject gameObject, OWRigidbody targetRigidbody, bool lookAtPlayer)
         {
             Transform parent = targetRigidbody.transform;
             gameObject.SetActive(true);
@@ -129,15 +149,21 @@ namespace ObjectSpawner
             Quaternion lhs = Quaternion.FromToRotation(gameObject.transform.TransformDirection(Vector3.up), normal);
             gameObject.transform.rotation = lhs * gameObject.transform.rotation;
             gameObject.transform.position = point + gameObject.transform.TransformDirection(Vector3.zero);
+            if (lookAtPlayer)
+            {
+                base.ModHelper.Console.WriteLine("GO is : " + gameObject.transform.forward);
+                base.ModHelper.Console.WriteLine("Player is : " + Locator.GetPlayerTransform().forward);
+                //gameObject.transform.RotateAround(point, normal, Vector3.Angle(gameObject.transform.forward, Locator.GetPlayerTransform().forward) + 180);
+                gameObject.transform.LookAt(new Vector3(gameObject.transform.position.x, Locator.GetPlayerTransform().position.y, gameObject.transform.position.z));
+            }
         }
 
-        void PlaceObjectRaycast(GameObject gameObject)
+        void PlaceObjectRaycast(GameObject gameObject, bool lookAtPlayer = false)
         {
-
             if (IsPlaceable(out Vector3 placeNormal, out Vector3 placePoint, out OWRigidbody targetRigidbody))
             {
                 goList.Add(gameObject);
-                PlaceObject(placeNormal, placePoint, gameObject, targetRigidbody);
+                PlaceObject(placeNormal, placePoint, gameObject, targetRigidbody, lookAtPlayer);
             }
         }
 
