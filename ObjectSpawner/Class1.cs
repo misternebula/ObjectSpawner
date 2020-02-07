@@ -151,10 +151,8 @@ namespace ObjectSpawner
             gameObject.transform.position = point + gameObject.transform.TransformDirection(Vector3.zero);
             if (lookAtPlayer)
             {
-                base.ModHelper.Console.WriteLine("GO is : " + gameObject.transform.forward);
-                base.ModHelper.Console.WriteLine("Player is : " + Locator.GetPlayerTransform().forward);
                 //gameObject.transform.RotateAround(point, normal, Vector3.Angle(gameObject.transform.forward, Locator.GetPlayerTransform().forward) + 180);
-                gameObject.transform.LookAt(new Vector3(gameObject.transform.position.x, Locator.GetPlayerTransform().position.y, gameObject.transform.position.z));
+                gameObject.transform.LookAt(Locator.GetPlayerTransform().transform, normal);
             }
         }
 
