@@ -45,33 +45,47 @@ namespace ObjectSpawner
             // Create copies of any object we want to spawn. This way we can
             // edit their properties here, instead of editing them in the spawn
             // function.
-            base.ModHelper.Console.WriteLine(":     ObjectSpawner GO load...");
-
-            Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-            gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("Character_NOM_Solanum"));
-
-            Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-            gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("Villager_HEA_Mica"));
-
-            Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-            gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("Prefab_NOM_Staff"));
-
-            Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-            gameObjects[gameObjects.Length - 1] = Instantiate<GameObject>(GameObject.Find("Prefab_NOM_Torch"));
-
-            Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-            gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("EscapePodFlare_Body"));
-
-            foreach (var item in gameObjects)
+            base.ModHelper.Console.WriteLine(LoadManager.GetCurrentScene());
+            if (LoadManager.GetCurrentScene() == OWScene.SolarSystem || LoadManager.GetCurrentScene() == OWScene.EyeOfTheUniverse)
             {
-                item.SetActive(false);
-            }
+                base.ModHelper.Console.WriteLine(":     ObjectSpawner GO load...");
 
-            base.ModHelper.Console.WriteLine(":     Successfully loaded [" + gameObjects.Length + "] GameObjects.");
+                Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
+                base.ModHelper.Console.WriteLine(GameObject.Find("Character_NOM_Solanum"));
+                gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("Character_NOM_Solanum"));
 
-            if (gameObjects.Length != EXPECTED_GO_COUNT)
-            {
-                base.ModHelper.Console.WriteLine(":     ERROR! Expected number of GOs is different than loaded!");
+                base.ModHelper.Console.WriteLine("1");
+
+                if (LoadManager.GetCurrentScene() == OWScene.SolarSystem)
+                {
+                    Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
+                    gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("Villager_HEA_Mica"));
+
+                    Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
+                    gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("Prefab_NOM_Staff"));
+
+                    Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
+                    gameObjects[gameObjects.Length - 1] = Instantiate<GameObject>(GameObject.Find("Prefab_NOM_Torch"));
+
+                    Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
+                    gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("EscapePodFlare_Body"));
+                }
+
+                base.ModHelper.Console.WriteLine("2");
+
+                foreach (var item in gameObjects)
+                {
+                    item.SetActive(false);
+                }
+                base.ModHelper.Console.WriteLine("3");
+
+
+                base.ModHelper.Console.WriteLine(":     Successfully loaded [" + gameObjects.Length + "] GameObject(s).");
+
+                if (gameObjects.Length != EXPECTED_GO_COUNT)
+                {
+                    base.ModHelper.Console.WriteLine(":     ERROR! Expected number of GOs is different than loaded!");
+                }
             }
         }
 
