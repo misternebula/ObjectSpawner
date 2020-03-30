@@ -11,8 +11,6 @@ namespace ObjectSpawner
 {
     public class MainClass : ModBehaviour
     {
-        public const int EXPECTED_GO_COUNT = 5;
-
         public GameObject[] gameObjects = new GameObject[0];
 
         public GameObject edit;
@@ -22,8 +20,6 @@ namespace ObjectSpawner
         public bool editMode = false;
 
         public AssetBundle _assetBundle;
-
-        public string copy;
 
         public static IModHelper helper;
 
@@ -48,13 +44,21 @@ namespace ObjectSpawner
             base.ModHelper.Console.WriteLine(LoadManager.GetCurrentScene());
             if (LoadManager.GetCurrentScene() == OWScene.SolarSystem || LoadManager.GetCurrentScene() == OWScene.EyeOfTheUniverse)
             {
+                gameObjects = new GameObject[0];
+
+                base.ModHelper.Console.WriteLine(":     Destroying old GOs...");
+
+                foreach (var item in GameObject.FindObjectsOfType<BeepBoop>())
+                {
+                    base.ModHelper.Console.WriteLine(":     Destroying " + item.name);
+                    GameObject.Destroy(item.gameObject);
+                }
+
                 base.ModHelper.Console.WriteLine(":     ObjectSpawner GO load...");
 
                 Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
                 base.ModHelper.Console.WriteLine(GameObject.Find("Character_NOM_Solanum"));
                 gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("Character_NOM_Solanum"));
-
-                base.ModHelper.Console.WriteLine("1");
 
                 if (LoadManager.GetCurrentScene() == OWScene.SolarSystem)
                 {
@@ -71,21 +75,13 @@ namespace ObjectSpawner
                     gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("EscapePodFlare_Body"));
                 }
 
-                base.ModHelper.Console.WriteLine("2");
-
                 foreach (var item in gameObjects)
                 {
                     item.SetActive(false);
+                    item.AddComponent<BeepBoop>();
                 }
-                base.ModHelper.Console.WriteLine("3");
-
 
                 base.ModHelper.Console.WriteLine(":     Successfully loaded [" + gameObjects.Length + "] GameObject(s).");
-
-                if (gameObjects.Length != EXPECTED_GO_COUNT)
-                {
-                    base.ModHelper.Console.WriteLine(":     ERROR! Expected number of GOs is different than loaded!");
-                }
             }
         }
 
@@ -205,16 +201,6 @@ namespace ObjectSpawner
                     if (Input.GetKeyDown(KeyCode.KeypadEnter))
                     {
                         edit.transform.Translate(0f, -moveSpeed, 0f);
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.Keypad1))
-                    {
-                        copy = edit.name;
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.Keypad3))
-                    {
-                        PlaceObjectRaycast(Instantiate(GameObject.Find(copy)), true);
                     }
                 }
                 else
