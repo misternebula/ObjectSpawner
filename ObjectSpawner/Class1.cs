@@ -41,7 +41,6 @@ namespace ObjectSpawner
             // Create copies of any object we want to spawn. This way we can
             // edit their properties here, instead of editing them in the spawn
             // function.
-            base.ModHelper.Console.WriteLine(LoadManager.GetCurrentScene());
             if (LoadManager.GetCurrentScene() == OWScene.SolarSystem || LoadManager.GetCurrentScene() == OWScene.EyeOfTheUniverse)
             {
                 gameObjects = new GameObject[0];
@@ -50,14 +49,12 @@ namespace ObjectSpawner
 
                 foreach (var item in GameObject.FindObjectsOfType<BeepBoop>())
                 {
-                    base.ModHelper.Console.WriteLine(":     Destroying " + item.name);
                     GameObject.Destroy(item.gameObject);
                 }
 
                 base.ModHelper.Console.WriteLine(":     ObjectSpawner GO load...");
 
                 Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-                base.ModHelper.Console.WriteLine(GameObject.Find("Character_NOM_Solanum"));
                 gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("Character_NOM_Solanum"));
 
                 if (LoadManager.GetCurrentScene() == OWScene.SolarSystem)
