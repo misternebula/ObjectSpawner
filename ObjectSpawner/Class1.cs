@@ -55,27 +55,21 @@ namespace ObjectSpawner
                 base.ModHelper.Console.WriteLine(":     ObjectSpawner GO load...");
 
                 Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-                gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("Character_NOM_Solanum"));
+                gameObjects[gameObjects.Length - 1] = GameObject.Find("Character_NOM_Solanum");
 
                 if (LoadManager.GetCurrentScene() == OWScene.SolarSystem)
                 {
                     Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-                    gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("Villager_HEA_Mica"));
+                    gameObjects[gameObjects.Length - 1] = GameObject.Find("Villager_HEA_Mica");
 
                     Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-                    gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("Prefab_NOM_Staff"));
+                    gameObjects[gameObjects.Length - 1] = GameObject.Find("Prefab_NOM_Staff");
 
                     Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-                    gameObjects[gameObjects.Length - 1] = Instantiate<GameObject>(GameObject.Find("Prefab_NOM_Torch"));
+                    gameObjects[gameObjects.Length - 1] = GameObject.Find("Prefab_NOM_Torch");
 
                     Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-                    gameObjects[gameObjects.Length - 1] = Instantiate(GameObject.Find("EscapePodFlare_Body"));
-                }
-
-                foreach (var item in gameObjects)
-                {
-                    item.SetActive(false);
-                    item.AddComponent<BeepBoop>();
+                    gameObjects[gameObjects.Length - 1] = GameObject.Find("EscapePodFlare_Body");
                 }
 
                 base.ModHelper.Console.WriteLine(":     Successfully loaded [" + gameObjects.Length + "] GameObject(s).");
@@ -277,6 +271,8 @@ namespace ObjectSpawner
                 gameObject.GetComponentInChildren<OWCollider>().SetActivation(true);
                 gameObject.GetComponentInChildren<OWCollider>().enabled = true;
             }
+
+            gameObject.AddComponent<BeepBoop>();
         }
 
         void PlaceObjectRaycast(GameObject gameObject, bool lookAtPlayer = false)
