@@ -3,7 +3,7 @@
   "author": "misternebula",
   "name": "ObjectSpawner",
   "uniqueName": "misternebula.ObjectSpawner",
-  "version": "1.0",
-  "owmlVersion": "0.3.39",
+  "version": "1.0.1",
+  "owmlVersion": "0.3.49",
   "dependencies" : [ "misternebula.MN-InputManager" ]
 }
