@@ -11,7 +11,7 @@ namespace ObjectSpawner
 {
     public class MainClass : ModBehaviour
     {
-        public GameObject[] gameObjects = new GameObject[0];
+        public List<ObjectBase> objectList = new List<ObjectBase>();
 
         public GameObject edit;
 
@@ -43,7 +43,6 @@ namespace ObjectSpawner
             // function.
             if (LoadManager.GetCurrentScene() == OWScene.SolarSystem || LoadManager.GetCurrentScene() == OWScene.EyeOfTheUniverse)
             {
-                gameObjects = new GameObject[0];
 
                 base.ModHelper.Console.WriteLine(":     Destroying old GOs...");
 
@@ -54,25 +53,30 @@ namespace ObjectSpawner
 
                 base.ModHelper.Console.WriteLine(":     ObjectSpawner GO load...");
 
-                Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-                gameObjects[gameObjects.Length - 1] = GameObject.Find("Character_NOM_Solanum");
+                //objectList.Add(new SolanumObject("Nomai_ANIM_SkyWatching_Idle", "quantummoon/meshes/characters"));
 
                 if (LoadManager.GetCurrentScene() == OWScene.SolarSystem)
                 {
-                    Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-                    gameObjects[gameObjects.Length - 1] = GameObject.Find("Villager_HEA_Mica");
+                    objectList.Add(new ObjectBase("Nomai_ANIM_SkyWatching_Idle", "quantummoon/meshes/characters"));
 
-                    Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-                    gameObjects[gameObjects.Length - 1] = GameObject.Find("Prefab_NOM_Staff");
+                    objectList.Add(new ObjectBase("Villager_HEA_Mica", "timberhearth/meshes/characters"));
 
-                    Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-                    gameObjects[gameObjects.Length - 1] = GameObject.Find("Prefab_NOM_Torch");
+                    objectList.Add(new ObjectBase("Prefab_NOM_Staff", "brittlehollow/meshes/props"));
 
-                    Array.Resize<GameObject>(ref gameObjects, gameObjects.Length + 1);
-                    gameObjects[gameObjects.Length - 1] = GameObject.Find("EscapePodFlare_Body");
+                    objectList.Add(new ObjectBase("Prefab_NOM_Torch", ""));
+
+                    objectList.Add(new ObjectBase("EscapePodFlare_Body", "darkbramble/meshes/props"));
+
+                    objectList.Add(new SelfObject("NPC_Player", ""));
+
+                    objectList.Add(new SelfObject("Villager_HEA_Gossan", "timberhearth/meshes/characters"));
+
+                    objectList.Add(new SelfObject("Villager_HEA_Hornfels (1)", "timberhearth/meshes/characters"));
+
+                    objectList.Add(new SelfObject("Villager_HEA_Hal_Museum", "timberhearth/meshes/characters"));
                 }
 
-                base.ModHelper.Console.WriteLine(":     Successfully loaded [" + gameObjects.Length + "] GameObject(s).");
+                base.ModHelper.Console.WriteLine(":     Successfully loaded [" + objectList.Count + "] object(s).");
             }
         }
 
@@ -97,9 +101,8 @@ namespace ObjectSpawner
                     if (Input.GetKeyDown(KeyCode.KeypadMultiply))
                     {
                         Vector3 forward = Locator.GetPlayerCamera().transform.forward;
-                        RaycastHit hit;
 
-                        if (Physics.Raycast(Locator.GetPlayerCamera().transform.position, forward, out hit, 100f, OWLayerMask.physicalMask | OWLayerMask.interactMask))
+                        if (Physics.Raycast(Locator.GetPlayerCamera().transform.position, forward, out RaycastHit hit, 100f, OWLayerMask.physicalMask | OWLayerMask.interactMask))
                         {
                             edit = hit.collider.gameObject;
                             UpdateEditHud();
@@ -194,35 +197,51 @@ namespace ObjectSpawner
                         edit.transform.Translate(0f, -moveSpeed, 0f);
                     }
                 }
-                else
+                else // Object Spawning Mode
                 {
                     if (Input.GetKeyDown(KeyCode.Keypad0))
                     {
-                        PlaceObjectRaycast(Instantiate(gameObjects[0]), true);
-                        StreamingManager.LoadStreamingAssets("quantummoon/meshes/characters");
+                        PlaceObjectRaycast(objectList[0].Load(), true);
                     }
 
                     if (Input.GetKeyDown(KeyCode.Keypad1))
                     {
-                        PlaceObjectRaycast(Instantiate(gameObjects[1]), true);
-                        StreamingManager.LoadStreamingAssets("timberhearth/meshes/characters");
+                        PlaceObjectRaycast(objectList[1].Load(), true);
                     }
 
                     if (Input.GetKeyDown(KeyCode.Keypad2))
                     {
-                        PlaceObjectRaycast(Instantiate(gameObjects[2]), true);
-                        StreamingManager.LoadStreamingAssets("brittlehollow/meshes/props");
+                        PlaceObjectRaycast(objectList[2].Load(), true);
                     }
 
                     if (Input.GetKeyDown(KeyCode.Keypad3))
                     {
-                        PlaceObjectRaycast(Instantiate(gameObjects[3]), true);
+                        PlaceObjectRaycast(objectList[3].Load(), true);
                     }
 
                     if (Input.GetKeyDown(KeyCode.Keypad4))
                     {
-                        PlaceObjectRaycast(Instantiate(gameObjects[4]), true);
-                        StreamingManager.LoadStreamingAssets("darkbramble/meshes/props");
+                        PlaceObjectRaycast(objectList[4].Load(), true);
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.Keypad5))
+                    {
+                        PlaceObjectRaycast(objectList[5].Load(), true);
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.Keypad6))
+                    {
+                        PlaceObjectRaycast(objectList[6].Load(), true);
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.Keypad7))
+                    {
+                        PlaceObjectRaycast(objectList[7].Load(), true);
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.Keypad8))
+                    {
+                        PlaceObjectRaycast(objectList[8].Load(), true);
                     }
                 }
             }
